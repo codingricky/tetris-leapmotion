@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.github.codingricky</groupId>
-    <artifactId>core-tetris</artifactId>
+    <artifactId>tetris-core</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
