@@ -12,26 +12,12 @@ public class Board {
         this.maxY = y;
     }
 
-    public Board(Board board) {
-        this(board.maxX, board.maxY);
-
-        for (int currentX = 0; currentX < maxX; currentX++) {
-            for (int currentY = 0; currentY < maxY; currentY++) {
-                setPieceAt(currentX, currentY, board.getPieceAt(currentX, currentY));
-            }
-        }
-    }
-
     public int getX() {
         return maxX;
     }
 
     public int getY() {
         return maxY;
-    }
-
-    public int getCols() {
-        return maxX;
     }
 
     public int getRows() {
