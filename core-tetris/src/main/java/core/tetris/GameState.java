@@ -2,8 +2,6 @@ package core.tetris;
 
 public class GameState {
 
-    private GameStateListener gameStateListener;
-
 	private int totalLines;
 	private int delay;
 	private int score;
@@ -47,25 +45,14 @@ public class GameState {
 
 	public void stopPlaying() {
 		playing = false;
-        notifyStop();
 	}
 
 	public void startPlaying() {
 		playing = true;
 	}
 
-    private void notifyStop() {
-        if (gameStateListener != null) {
-            gameStateListener.stopped();
-        }
-    }
-
     public long getDelay() {
         return delay;
-    }
-
-    public void setGameStateListener(GameStateListener gameStateListener) {
-        this.gameStateListener = gameStateListener;
     }
 
     public int getLines() {

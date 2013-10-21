@@ -110,16 +110,4 @@ public class TetrisGame {
         factory.setNextPieces(previewBoards.getBoards());
 
     }
-
-    public boolean hasStarted() {
-        return gameState.isPlaying();
-    }
-
-    public void setGameStateListener(GameStateListener gameStateListener) {
-        gameState.setGameStateListener(gameStateListener);
-    }
-
-    public GameState getGameState() {
-        return gameState;
-    }
 }
