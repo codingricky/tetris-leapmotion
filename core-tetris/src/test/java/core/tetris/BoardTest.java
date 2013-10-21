@@ -21,7 +21,7 @@ public class BoardTest {
     public void testGetters() {
         assertThat(board.getX()).isEqualTo(WIDTH);
         assertThat(board.getY()).isEqualTo(HEIGHT);
-        assertThat(board.getRows()).isEqualTo(WIDTH);
+        assertThat(board.getRows()).isEqualTo(HEIGHT);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class BoardTest {
     public void testInitialState() {
         for (int x = 0; x < WIDTH; x++) {
             for (int y = 0; y < HEIGHT; y++) {
-                assertThat(board.getPieceAt(x, y)).isEqualTo()
+                assertThat(board.getPieceAt(x, y)).isEqualTo(null);
             }
         }
     }

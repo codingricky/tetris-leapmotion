@@ -35,10 +35,10 @@ public class TetrisPiece {
 				centrePoint.y++; // Drop
 
 				if (board.willFit(this)) {
-					board.addPiece(this, false);
+					board.addPiece(this);
 				} else {
 					centrePoint.y--; // Undrop
-					board.addPiece(this, true);
+					board.addPiece(this);
 					loop = false;
 					result = false;
 				}
@@ -49,10 +49,10 @@ public class TetrisPiece {
 			doMove(direction);
 
 			if (board.willFit(this)) {
-				board.addPiece(this, true);
+				board.addPiece(this);
 			} else {
 				undoMove(direction);
-				board.addPiece(this, true);
+				board.addPiece(this);
 				result = false;
 			}
 		}
@@ -192,53 +192,4 @@ public class TetrisPiece {
 		}
 	}
 
-	public int getFurthestLeft() {
-		Integer furthestLeft = null;
-		for (Point point : getRelativePoints()) {
-			int relativeX = point.getX() + centrePoint.getX();
-			if (furthestLeft == null || (relativeX < furthestLeft)) {
-				furthestLeft = relativeX;
-			}
-		}
-		return furthestLeft;
-	}
-
-	public int getFurthestRight() {
-		Integer furthestRight = null;
-		for (Point point : getRelativePoints()) {
-			int relativeX = (int)point.getX() + (int)centrePoint.getX();
-			if (furthestRight == null || (relativeX > furthestRight)) {
-				furthestRight = relativeX;
-			}
-		}
-		return furthestRight;
-	}
-
-	public Direction moveHorizontallyUntil(int x) {
-		boolean didItMove = false;
-		if (shouldMoveLeft(x)) {
-			do {
-				didItMove = move(Direction.LEFT);
-			} while (shouldMoveLeft(x) && didItMove);
-			return Direction.LEFT;
-		} else if (shouldMoveRight(x)) {
-			do {
-				didItMove = move(Direction.RIGHT);
-			} while (shouldMoveRight(x) && didItMove);
-			return Direction.RIGHT;
-		}
-		return null;
-	}
-	
-	private boolean shouldMoveLeft(int x) {
-		return x < getFurthestLeft();
-	}
-	
-	private boolean shouldMoveRight(int x) {
-		return x > getFurthestRight();
-	}
-	
-	public int getMaxRotations() {
-		return maxRotate;
-	}
 }

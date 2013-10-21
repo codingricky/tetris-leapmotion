@@ -4,6 +4,7 @@ public class PreviewBoards {
 
 	private static final int DEFAULT_ROWS = 5;
 	private static final int DEFAULT_COLS = 5;
+
 	private TetrisBoard[] boards;
 	
 	public PreviewBoards(int numberOfTilesToPreview) {

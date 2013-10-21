@@ -94,9 +94,9 @@ public class TetrisGame {
                 updatePreviewBoards();
 
                 if (board.willFit(currentPiece)) {
-                    board.addPiece(currentPiece, true);
+                    board.addPiece(currentPiece);
                 } else {
-                    board.addPiece(currentPiece, true);
+                    board.addPiece(currentPiece);
                     stopGame();
                 }
             } else {
