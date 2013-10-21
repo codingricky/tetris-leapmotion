@@ -69,7 +69,7 @@ public class TetrisGame {
         }
     }
 
-    public void cycleThroughOneIteration() {
+    public void tick() {
         long timeSinceLastUpdate = System.currentTimeMillis() - lastUpdate;
 
         if (timeSinceLastUpdate < gameState.getDelay()) {
