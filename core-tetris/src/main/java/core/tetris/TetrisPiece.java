@@ -32,12 +32,12 @@ public class TetrisPiece {
 
 			while (loop) {
 				board.removePiece(this);
-				centrePoint.y++; // Drop
+				centrePoint = centrePoint.drop();
 
 				if (board.willFit(this)) {
 					board.addPiece(this);
 				} else {
-					centrePoint.y--; // Undrop
+                    centrePoint = centrePoint.unDrop();
 					board.addPiece(this);
 					loop = false;
 					result = false;
@@ -62,11 +62,11 @@ public class TetrisPiece {
 
 	private void doMove(Direction direction) {
 		if (direction == LEFT) {
-			centrePoint.x--;
+            centrePoint = centrePoint.left();
 		} else if (direction == RIGHT) {
-			centrePoint.x++;
+			centrePoint = centrePoint.right();
 		} else if (direction == DOWN) {
-			centrePoint.y++;
+			centrePoint = centrePoint.drop();
 		} else if (direction == ROTATE) {
 			rotateClockwise();
 		}
@@ -74,11 +74,11 @@ public class TetrisPiece {
 
 	private void undoMove(Direction direction) {
 		if (direction == LEFT) {
-			centrePoint.x++;
+			centrePoint = centrePoint.right();
 		} else if (direction == RIGHT) {
-			centrePoint.x--;
+            centrePoint = centrePoint.left();
 		} else if (direction == DOWN) {
-			centrePoint.y--;
+            centrePoint = centrePoint.unDrop();
 		} else if (direction == ROTATE) {
 			rotateAntiClockwise();
 		}
@@ -185,10 +185,7 @@ public class TetrisPiece {
 
 	private void rotateClockwiseNow() {
 		for (int count = 0; count < 4; count++) {
-			final int temp = blocks[count].x;
-
-			blocks[count].x = -blocks[count].y;
-			blocks[count].y = temp;
+            blocks[count] = blocks[count].rotateClockWise();
 		}
 	}
 

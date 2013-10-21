@@ -35,8 +35,8 @@ public class TetrisBoard {
 			final Point[] blocks = piece.getRelativePoints();
 
 			for (int count = 0; count < 4; count++) {
-				int x = centre.x + blocks[count].x;
-				int y = centre.y + blocks[count].y;
+				int x = centre.getX() + blocks[count].getX();
+				int y = centre.getY() + blocks[count].getY();
 
 				board.setPieceAt(x, y, piece.getType());
 			}
@@ -49,8 +49,8 @@ public class TetrisBoard {
 			final Point[] blocks = piece.getRelativePoints();
 
 			for (int count = 0; count < 4; count++) {
-				int x = centre.x + blocks[count].x;
-				int y = centre.y + blocks[count].y;
+                int x = centre.getX() + blocks[count].getX();
+                int y = centre.getY() + blocks[count].getY();
 
 				board.setPieceAt(x, y, EMPTY_BLOCK);
 			}
@@ -77,8 +77,8 @@ public class TetrisBoard {
 			final Point[] blocks = piece.getRelativePoints();
 
 			for (int count = 0; count < 4 && result; count++) {
-				int x = centre.x + blocks[count].x;
-				int y = centre.y + blocks[count].y;
+                int x = centre.getX() + blocks[count].getX();
+                int y = centre.getY() + blocks[count].getY();
 
 				// Ensure it's within the boundaries
 				if (x < 0 || x >= getColumns() || y < 0 || y >= getRows())

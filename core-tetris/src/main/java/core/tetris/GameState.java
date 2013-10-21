@@ -2,7 +2,9 @@ package core.tetris;
 
 public class GameState {
 
-	private int totalLines;
+    private static final int DEFAULT_DELAY = 750;
+
+    private int totalLines;
 	private int delay;
 	private int score;
 	private boolean playing;
@@ -23,7 +25,7 @@ public class GameState {
 	public void reset() {
 		totalLines = 0;
 		score = 0;
-		delay = 750;
+		delay = DEFAULT_DELAY;
 		playing = false;
 	}
 
@@ -53,9 +55,5 @@ public class GameState {
 
     public long getDelay() {
         return delay;
-    }
-
-    public int getLines() {
-        return totalLines;
     }
 }

@@ -1,4 +1,0 @@
-language: java
-script:
-  - cd core-tetris
-  - mvn clean install
