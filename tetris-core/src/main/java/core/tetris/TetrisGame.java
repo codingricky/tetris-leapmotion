@@ -108,6 +108,9 @@ public class TetrisGame {
     private void updatePreviewBoards() {
         previewBoards.resetBoard();
         factory.setNextPieces(previewBoards.getBoards());
+    }
 
+    public int getScore() {
+        return gameState.getScore();
     }
 }

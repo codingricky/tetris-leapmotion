@@ -1,4 +1,4 @@
 .idea
 *.iml
-core-tetris/target
+tetris-core/target
 tetris-game/target
