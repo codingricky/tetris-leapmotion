@@ -1,1 +1,5 @@
 language: java
+before_script:
+  - git clone https://github.com/nguillaumin/slick2d-maven
+  - cd slick2d-maven
+  - mvn clean install
