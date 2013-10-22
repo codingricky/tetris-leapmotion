@@ -18,15 +18,19 @@ import java.util.Map;
  */
 public class Game extends BasicGame {
 
-    /** Screen width */
-    private static final int WIDTH = 1024;
-    /** Screen height */
+    private static final int WIDTH = 500;
     private static final int HEIGHT = 768;
+
+    private static final int SCORE_X = WIDTH - 100;
+    private static final int SCORE_Y = 15;
 
     private static final int LEFT = 203;
     private static final int RIGHT = 205;
     private static final int DOWN = 208;
     private static final int UP = 200;
+    private static final int SPACE = 57;
+    private static final int BOARD_X_OFFSET = 30;
+    private static final int BOARD_Y_OFFSET = 30;
 
     private TetrisGame tetrisGame;
     private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
@@ -36,6 +40,16 @@ public class Game extends BasicGame {
     }
 
     public void render(GameContainer container, Graphics g) throws SlickException {
+        Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
+        g.drawRect(BOARD_X_OFFSET, BOARD_Y_OFFSET, tetrisGame.getX() * sampleImage.getWidth(), tetrisGame.getY() * sampleImage.getHeight());
+        drawBoard(g);
+
+        String score = String.format("Score:%d", tetrisGame.getScore());
+
+        g.drawString(score, SCORE_X, SCORE_Y);
+    }
+
+    private void drawBoard(Graphics g) {
         for (int x = 0; x < tetrisGame.getX(); x++) {
             for (int y = 0; y < tetrisGame.getY(); y++) {
                 PieceType pieceAt = tetrisGame.getPieceAt(x, y);
@@ -43,7 +57,7 @@ public class Game extends BasicGame {
                     Image image = pieceTypeToImageMap.get(pieceAt);
                     int xPosition = x * image.getWidth();
                     int yPosition = y * image.getHeight();
-                    g.drawImage(image, xPosition, yPosition);
+                    g.drawImage(image, xPosition + BOARD_X_OFFSET, yPosition + BOARD_Y_OFFSET);
                 }
             }
         }
@@ -70,7 +84,6 @@ public class Game extends BasicGame {
 
     @Override
     public void keyPressed(int key, char c) {
-        System.out.println(key);
         if (key == LEFT) {
             tetrisGame.movePiece(Direction.LEFT);
         } else if (key == RIGHT) {
@@ -79,6 +92,8 @@ public class Game extends BasicGame {
             tetrisGame.movePiece(Direction.DOWN);
         } else if (key == UP) {
             tetrisGame.movePiece(Direction.ROTATE);
+        } else if (key == SPACE) {
+            tetrisGame.movePiece(Direction.FALL);
         }
     }
     
