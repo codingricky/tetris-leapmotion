@@ -1,5 +1,6 @@
 package tetris.game;
 
+import core.tetris.Direction;
 import core.tetris.PieceType;
 import core.tetris.TetrisGame;
 import org.newdawn.slick.AppGameContainer;
@@ -18,9 +19,14 @@ import java.util.Map;
 public class Game extends BasicGame {
 
     /** Screen width */
-    private static final int WIDTH = 800;
+    private static final int WIDTH = 1024;
     /** Screen height */
-    private static final int HEIGHT = 600;
+    private static final int HEIGHT = 768;
+
+    private static final int LEFT = 203;
+    private static final int RIGHT = 205;
+    private static final int DOWN = 208;
+    private static final int UP = 200;
 
     private TetrisGame tetrisGame;
     private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
@@ -60,6 +66,20 @@ public class Game extends BasicGame {
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
         tetrisGame.tick();
+    }
+
+    @Override
+    public void keyPressed(int key, char c) {
+        System.out.println(key);
+        if (key == LEFT) {
+            tetrisGame.movePiece(Direction.LEFT);
+        } else if (key == RIGHT) {
+            tetrisGame.movePiece(Direction.RIGHT);
+        } else if (key == DOWN) {
+            tetrisGame.movePiece(Direction.DOWN);
+        } else if (key == UP) {
+            tetrisGame.movePiece(Direction.ROTATE);
+        }
     }
     
     public static void main(String[] args) throws SlickException {
