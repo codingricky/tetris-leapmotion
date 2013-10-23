@@ -1,5 +1,7 @@
 package tetris.game;
 
+import com.leapmotion.leap.Controller;
+import com.leapmotion.leap.Listener;
 import core.tetris.Direction;
 import core.tetris.PieceType;
 import core.tetris.TetrisGame;
@@ -10,7 +12,6 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.command.BasicCommand;
 import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
@@ -33,6 +34,9 @@ public class Game extends BasicGame {
     private static final int BOARD_X_OFFSET = 30;
     private static final int BOARD_Y_OFFSET = 30;
 
+    private Listener listener;
+    private Controller leapController;
+
     private Command left = new TetrisCommand(Direction.LEFT);
     private Command right = new TetrisCommand(Direction.RIGHT);
     private Command down = new TetrisCommand(Direction.DOWN);
@@ -41,6 +45,7 @@ public class Game extends BasicGame {
 
     private TetrisGame tetrisGame;
     private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
+    private LeapListener leapListener;
 
     public Game() {
         super("Tetris LeapMotion");
@@ -101,13 +106,21 @@ public class Game extends BasicGame {
         pieceTypeToImageMap.put(PieceType.S_PIECE, new Image("images/purple.png"));
         pieceTypeToImageMap.put(PieceType.T_PIECE, new Image("images/red.png"));
         pieceTypeToImageMap.put(PieceType.Z_PIECE, new Image("images/yellow.png"));
+
+        initLeapMotion();
+    }
+
+    private void initLeapMotion() {
+        leapController = new Controller();
+        leapListener = new LeapListener(tetrisGame);
+        leapController.addListener(leapListener);
     }
 
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
         tetrisGame.tick();
     }
-    
+
     public static void main(String[] args) throws SlickException {
         AppGameContainer app = new AppGameContainer(new Game());
         app.setDisplayMode(WIDTH, HEIGHT, false);
