@@ -8,7 +8,13 @@ import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.command.BasicCommand;
+import org.newdawn.slick.command.Command;
+import org.newdawn.slick.command.InputProvider;
+import org.newdawn.slick.command.InputProviderListener;
+import org.newdawn.slick.command.KeyControl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -32,11 +38,17 @@ public class Game extends BasicGame {
     private static final int BOARD_X_OFFSET = 30;
     private static final int BOARD_Y_OFFSET = 30;
 
+    private Command left = new TetrisCommand(Direction.LEFT);
+    private Command right = new TetrisCommand(Direction.RIGHT);
+    private Command down = new TetrisCommand(Direction.DOWN);
+    private Command rotate = new TetrisCommand(Direction.ROTATE);
+    private Command fall = new TetrisCommand(Direction.FALL);
+
     private TetrisGame tetrisGame;
     private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
 
     public Game() {
-        super("A Slick2d game");
+        super("Tetris LeapMotion");
     }
 
     public void render(GameContainer container, Graphics g) throws SlickException {
@@ -68,6 +80,25 @@ public class Game extends BasicGame {
         tetrisGame = new TetrisGame();
         tetrisGame.startGame();
 
+        InputProvider provider = new InputProvider(container.getInput());
+        provider.addListener(new InputProviderListener() {
+            @Override
+            public void controlPressed(Command command) {
+                TetrisCommand tetrisCommand = (TetrisCommand) command;
+                tetrisGame.movePiece(tetrisCommand.getDirection());
+            }
+
+            @Override
+            public void controlReleased(Command command) {
+            }
+        });
+        provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
+        provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
+        provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
+        provider.bindCommand(new KeyControl(Input.KEY_UP), rotate);
+        provider.bindCommand(new KeyControl(Input.KEY_SPACE), fall);
+
+
         pieceTypeToImageMap.put(PieceType.I_PIECE, new Image("images/aqua.png"));
         pieceTypeToImageMap.put(PieceType.J_PIECE, new Image("images/blue.png"));
         pieceTypeToImageMap.put(PieceType.O_PIECE, new Image("images/green.png"));
@@ -80,21 +111,6 @@ public class Game extends BasicGame {
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
         tetrisGame.tick();
-    }
-
-    @Override
-    public void keyPressed(int key, char c) {
-        if (key == LEFT) {
-            tetrisGame.movePiece(Direction.LEFT);
-        } else if (key == RIGHT) {
-            tetrisGame.movePiece(Direction.RIGHT);
-        } else if (key == DOWN) {
-            tetrisGame.movePiece(Direction.DOWN);
-        } else if (key == UP) {
-            tetrisGame.movePiece(Direction.ROTATE);
-        } else if (key == SPACE) {
-            tetrisGame.movePiece(Direction.FALL);
-        }
     }
     
     public static void main(String[] args) throws SlickException {
