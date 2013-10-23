@@ -30,11 +30,6 @@ public class Game extends BasicGame {
     private static final int SCORE_X = WIDTH - 100;
     private static final int SCORE_Y = 15;
 
-    private static final int LEFT = 203;
-    private static final int RIGHT = 205;
-    private static final int DOWN = 208;
-    private static final int UP = 200;
-    private static final int SPACE = 57;
     private static final int BOARD_X_OFFSET = 30;
     private static final int BOARD_Y_OFFSET = 30;
 
