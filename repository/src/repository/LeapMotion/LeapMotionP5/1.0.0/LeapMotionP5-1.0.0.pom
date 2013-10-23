@@ -1,0 +1,7 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>LeapMotion</groupId>
+    <artifactId>LeapMotionP5</artifactId>
+    <version>1.0.0</version>
+</project>
+

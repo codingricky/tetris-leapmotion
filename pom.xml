@@ -11,6 +11,7 @@
     <name>tetris-motion</name>
 
     <modules>
+        <module>repository</module>
         <module>tetris-core</module>
         <module>tetris-game</module>
     </modules>

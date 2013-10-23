@@ -1,0 +1,39 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.github.codingricky</groupId>
+        <artifactId>tetris-motion</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    <groupId>com.github.codingricky</groupId>
+    <artifactId>repository</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>repository</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>LeapMotion</groupId>
+            <artifactId>LeapJava</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>LeapMotion</groupId>
+            <artifactId>LeapMotionP5</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+    <repositories>
+        <repository>
+            <id>local-file</id>
+            <url>file:${basedir}/src/repository</url>
+        </repository>
+    </repositories>
+</project>

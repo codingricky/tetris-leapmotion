@@ -2,3 +2,4 @@
 *.iml
 tetris-core/target
 tetris-game/target
+repository/target
