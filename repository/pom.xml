@@ -7,7 +7,6 @@
         <artifactId>tetris-motion</artifactId>
         <version>1.0-SNAPSHOT</version>
     </parent>
-    <groupId>com.github.codingricky</groupId>
     <artifactId>repository</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
@@ -28,6 +27,12 @@
             <groupId>LeapMotion</groupId>
             <artifactId>LeapMotionP5</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>LeapMotion</groupId>
+            <artifactId>LeapNativeLib</artifactId>
+            <version>1.0.0</version>
+            <classifier>natives-osx</classifier>
         </dependency>
     </dependencies>
     <repositories>
