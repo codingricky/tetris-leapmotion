@@ -2,17 +2,20 @@ package tetris.game;
 
 public class TetrisGameScreenPlacement {
 
-    private int scoreX;
-    private int scoreY;
+    private static final int FIXED_X_OFFSET = 30;
+    public static final int FIXED_Y_OFFSET = 30;
+    private final int scoreX;
+    private final int scoreY;
 
-    private int boardX;
-    private int boardY;
+    private final int boardX;
+    private final int boardY;
 
-    public TetrisGameScreenPlacement(int scoreX, int scoreY, int boardX, int boardY) {
-        this.scoreX = scoreX;
-        this.scoreY = scoreY;
-        this.boardX = boardX;
-        this.boardY = boardY;
+    public TetrisGameScreenPlacement(int currentColumnInRow, int currentRow) {
+        scoreX = FIXED_X_OFFSET + currentColumnInRow * 500;
+        scoreY = FIXED_Y_OFFSET + currentRow * 700;
+
+        boardX = FIXED_X_OFFSET + currentColumnInRow * 500;
+        boardY = FIXED_Y_OFFSET + currentRow * 700;
     }
 
     public int getScoreXOffset() {
@@ -29,9 +32,5 @@ public class TetrisGameScreenPlacement {
 
     public int getBoardYOffset() {
         return boardY;
-    }
-
-    public TetrisGameScreenPlacement getNextScreenPlacement(int numberOfGamesPerRow) {
-        return new TetrisGameScreenPlacement(scoreX + 500, scoreY, boardX + 500, boardY);
     }
 }
