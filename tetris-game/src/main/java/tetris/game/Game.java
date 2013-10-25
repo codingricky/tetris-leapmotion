@@ -6,14 +6,17 @@ import java.util.Map;
 import core.tetris.Direction;
 import core.tetris.PieceType;
 import core.tetris.TetrisGame;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.Color;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.command.BasicCommand;
 import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
@@ -34,14 +37,16 @@ public class Game extends BasicGame {
     }
 
     // commands
-    private Command left = new TetrisCommand(Direction.LEFT);
-    private Command right = new TetrisCommand(Direction.RIGHT);
-    private Command down = new TetrisCommand(Direction.DOWN);
-    private Command rotate = new TetrisCommand(Direction.ROTATE);
-    private Command fall = new TetrisCommand(Direction.FALL);
+    private final Command left = new TetrisCommand(Direction.LEFT);
+    private final Command right = new TetrisCommand(Direction.RIGHT);
+    private final Command down = new TetrisCommand(Direction.DOWN);
+    private final Command rotate = new TetrisCommand(Direction.ROTATE);
+    private final Command fall = new TetrisCommand(Direction.FALL);
+    private final Command addGame = new BasicCommand("Add Game");
+    private final Command nextGame = new BasicCommand("Next Game");
 
-    private AllGames games = new AllGames();
-    private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
+    private final AllGames games = new AllGames();
+    private final Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
 
     public Game() {
         super("Tetris LeapMotion");
@@ -99,8 +104,12 @@ public class Game extends BasicGame {
         provider.addListener(new InputProviderListener() {
             @Override
             public void controlPressed(Command command) {
-                TetrisCommand tetrisCommand = (TetrisCommand) command;
-                games.allMove(tetrisCommand.getDirection());
+                if (command instanceof TetrisCommand) {
+                    TetrisCommand tetrisCommand = (TetrisCommand) command;
+                    games.allMove(tetrisCommand.getDirection());
+                } else {
+                    
+                }
             }
 
             @Override
@@ -108,12 +117,13 @@ public class Game extends BasicGame {
             }
         });
 
-
         provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
         provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
         provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
         provider.bindCommand(new KeyControl(Input.KEY_UP), rotate);
         provider.bindCommand(new KeyControl(Input.KEY_SPACE), fall);
+        provider.bindCommand(new KeyControl(Input.KEY_2), nextGame);
+        provider.bindCommand(new KeyControl(Input.KEY_3), addGame);
     }
 
     private void buildPieceTypeToImageMap() throws SlickException {
