@@ -5,6 +5,7 @@ import core.tetris.PieceType;
 import core.tetris.TetrisGame;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -27,18 +28,16 @@ public class Game extends BasicGame {
     private static final int WIDTH = 500;
     private static final int HEIGHT = 768;
 
-    private static final int GAME_1_SCORE_X_OFFSET = 10;
-    private static final int GAME_1_SCORE_Y_OFFSET = 15;
-    private static final int GAME_1_BOARD_X_OFFSET = 30;
-    private static final int GAME_1_BOARD_Y_OFFSET = 30;
+    private static final int NUMBER_OF_GAMES_PER_ROW = 3;
 
+    // commands
     private Command left = new TetrisCommand(Direction.LEFT);
     private Command right = new TetrisCommand(Direction.RIGHT);
     private Command down = new TetrisCommand(Direction.DOWN);
     private Command rotate = new TetrisCommand(Direction.ROTATE);
     private Command fall = new TetrisCommand(Direction.FALL);
 
-    private List<TetrisSlickGame> games = new ArrayList<>();
+    private AllGames games = new AllGames();
     private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
 
     public Game() {
@@ -47,13 +46,16 @@ public class Game extends BasicGame {
 
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
-        for (TetrisSlickGame game : games) {
-            drawBoard(g, game.getTetrisGame(), game.getGameConfig());
+        TetrisGameScreenPlacement tetrisGameScreenPlacement = new TetrisGameScreenPlacement(0, 0, 0, 0);
+        for (TetrisGame game : games.getGames()) {
+            drawBoard(g, game, tetrisGameScreenPlacement);
+            tetrisGameScreenPlacement = tetrisGameScreenPlacement.getNextScreenPlacement(NUMBER_OF_GAMES_PER_ROW);
         }
     }
 
-    private void drawBoard(Graphics g, TetrisGame tetrisGame, GameConfig gameConfig) {
+    private void drawBoard(Graphics g, TetrisGame tetrisGame, TetrisGameScreenPlacement gameConfig) {
         Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
+        g.setColor(Color.red);
         g.drawRect(gameConfig.getBoardXOffset(),
                    gameConfig.getBoardYOffset(),
                 tetrisGame.getX() * sampleImage.getWidth(),
@@ -77,28 +79,17 @@ public class Game extends BasicGame {
 
     @Override
     public void init(GameContainer container) throws SlickException {
-        int scoreXOffset = GAME_1_SCORE_X_OFFSET;
-        int scoreYOffset = GAME_1_SCORE_Y_OFFSET;
-        int boardXOffset = GAME_1_BOARD_X_OFFSET;
-        int boardYOffset = GAME_1_BOARD_Y_OFFSET;
+        buildPieceTypeToImageMap();
 
-        for (int i = 0; i < NUMBER_OF_GAMES; i++) {
-            TetrisSlickGame game = new TetrisSlickGame(new GameConfig(scoreXOffset, scoreYOffset, boardXOffset, boardYOffset));
-            game.startGame();
-            games.add(game);
-
-            scoreXOffset += 500;
-            boardXOffset += 500;
-        }
+        games.createGames(NUMBER_OF_GAMES);
+        games.allStart();
 
         InputProvider provider = new InputProvider(container.getInput());
         provider.addListener(new InputProviderListener() {
             @Override
             public void controlPressed(Command command) {
                 TetrisCommand tetrisCommand = (TetrisCommand) command;
-                for (TetrisSlickGame game : games) {
-                    game.move(tetrisCommand.getDirection());
-                }
+                games.allMove(tetrisCommand.getDirection());
             }
 
             @Override
@@ -114,6 +105,9 @@ public class Game extends BasicGame {
         provider.bindCommand(new KeyControl(Input.KEY_SPACE), fall);
 
 
+    }
+
+    private void buildPieceTypeToImageMap() throws SlickException {
         pieceTypeToImageMap.put(PieceType.I_PIECE, new Image("images/aqua.png"));
         pieceTypeToImageMap.put(PieceType.J_PIECE, new Image("images/blue.png"));
         pieceTypeToImageMap.put(PieceType.O_PIECE, new Image("images/green.png"));
@@ -121,14 +115,11 @@ public class Game extends BasicGame {
         pieceTypeToImageMap.put(PieceType.S_PIECE, new Image("images/purple.png"));
         pieceTypeToImageMap.put(PieceType.T_PIECE, new Image("images/red.png"));
         pieceTypeToImageMap.put(PieceType.Z_PIECE, new Image("images/yellow.png"));
-
     }
 
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
-        for (TetrisSlickGame game : games) {
-            game.tick();
-        }
+        games.allTick();
     }
 
     public static void main(String[] args) throws SlickException {

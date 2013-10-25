@@ -1,6 +1,6 @@
 package tetris.game;
 
-public class GameConfig {
+public class TetrisGameScreenPlacement {
 
     private int scoreX;
     private int scoreY;
@@ -8,7 +8,7 @@ public class GameConfig {
     private int boardX;
     private int boardY;
 
-    public GameConfig(int scoreX, int scoreY, int boardX, int boardY) {
+    public TetrisGameScreenPlacement(int scoreX, int scoreY, int boardX, int boardY) {
         this.scoreX = scoreX;
         this.scoreY = scoreY;
         this.boardX = boardX;
@@ -29,5 +29,9 @@ public class GameConfig {
 
     public int getBoardYOffset() {
         return boardY;
+    }
+
+    public TetrisGameScreenPlacement getNextScreenPlacement(int numberOfGamesPerRow) {
+        return new TetrisGameScreenPlacement(scoreX + 500, scoreY, boardX + 500, boardY);
     }
 }
