@@ -1,7 +1,5 @@
 package tetris.game;
 
-import com.leapmotion.leap.Controller;
-import com.leapmotion.leap.Listener;
 import core.tetris.Direction;
 import core.tetris.PieceType;
 import core.tetris.TetrisGame;
@@ -25,17 +23,20 @@ import java.util.Map;
  */
 public class Game extends BasicGame {
 
-    private static final int WIDTH = 500;
+    private static final int WIDTH = 500 * 2;
     private static final int HEIGHT = 768;
 
-    private static final int SCORE_X = WIDTH - 100;
-    private static final int SCORE_Y = 15;
+    // offsets for game 1
+    private static final int GAME_1_SCORE_X_OFFSET = 10;
+    private static final int GAME_1_SCORE_Y_OFFSET = 15;
+    private static final int GAME_1_BOARD_X_OFFSET = 30;
+    private static final int GAME_1_BOARD_Y_OFFSET = 30;
 
-    private static final int BOARD_X_OFFSET = 30;
-    private static final int BOARD_Y_OFFSET = 30;
-
-    private Listener listener;
-    private Controller leapController;
+    // offsets for game 2
+    private static final int GAME_2_SCORE_X_OFFSET = GAME_1_SCORE_X_OFFSET + 500;
+    private static final int GAME_2_SCORE_Y_OFFSET = GAME_1_SCORE_Y_OFFSET;
+    private static final int GAME_2_BOARD_X_OFFSET = GAME_1_SCORE_X_OFFSET + 500;
+    private static final int GAME_2_BOARD_Y_OFFSET = GAME_1_BOARD_Y_OFFSET;
 
     private Command left = new TetrisCommand(Direction.LEFT);
     private Command right = new TetrisCommand(Direction.RIGHT);
@@ -43,25 +44,31 @@ public class Game extends BasicGame {
     private Command rotate = new TetrisCommand(Direction.ROTATE);
     private Command fall = new TetrisCommand(Direction.FALL);
 
-    private TetrisGame tetrisGame;
+    private TetrisGame tetrisGame1;
+    private GameConfig gameConfigForTetrisGame1;
+
+    private TetrisGame tetrisGame2;
+    private GameConfig gameConfigForTetrisGame2;
+
     private Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
-    private LeapListener leapListener;
 
     public Game() {
         super("Tetris LeapMotion");
     }
 
+    @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
-        Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
-        g.drawRect(BOARD_X_OFFSET, BOARD_Y_OFFSET, tetrisGame.getX() * sampleImage.getWidth(), tetrisGame.getY() * sampleImage.getHeight());
-        drawBoard(g);
-
-        String score = String.format("Score:%d", tetrisGame.getScore());
-
-        g.drawString(score, SCORE_X, SCORE_Y);
+        drawBoard(g, tetrisGame1, gameConfigForTetrisGame1);
+        drawBoard(g, tetrisGame2, gameConfigForTetrisGame2);
     }
 
-    private void drawBoard(Graphics g) {
+    private void drawBoard(Graphics g, TetrisGame tetrisGame, GameConfig gameConfig) {
+        Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
+        g.drawRect(gameConfig.getBoardXOffset(),
+                   gameConfig.getBoardYOffset(),
+                tetrisGame.getX() * sampleImage.getWidth(),
+                tetrisGame.getY() * sampleImage.getHeight());
+
         for (int x = 0; x < tetrisGame.getX(); x++) {
             for (int y = 0; y < tetrisGame.getY(); y++) {
                 PieceType pieceAt = tetrisGame.getPieceAt(x, y);
@@ -69,29 +76,46 @@ public class Game extends BasicGame {
                     Image image = pieceTypeToImageMap.get(pieceAt);
                     int xPosition = x * image.getWidth();
                     int yPosition = y * image.getHeight();
-                    g.drawImage(image, xPosition + BOARD_X_OFFSET, yPosition + BOARD_Y_OFFSET);
+                    g.drawImage(image, xPosition + gameConfig.getBoardXOffset(), yPosition + gameConfig.getBoardYOffset());
                 }
             }
         }
+
+        String score = String.format("Score:%d", tetrisGame.getScore());
+        g.drawString(score, gameConfig.getScoreXOffset(), gameConfig.getScoreYOffset());
     }
 
     @Override
     public void init(GameContainer container) throws SlickException {
-        tetrisGame = new TetrisGame();
-        tetrisGame.startGame();
+        tetrisGame1 = new TetrisGame();
+        tetrisGame1.startGame();
+        gameConfigForTetrisGame1 = new GameConfig(GAME_1_SCORE_X_OFFSET,
+                GAME_1_SCORE_Y_OFFSET,
+                GAME_1_BOARD_X_OFFSET,
+                GAME_1_BOARD_Y_OFFSET);
+
+        tetrisGame2 = new TetrisGame();
+        tetrisGame2.startGame();
+        gameConfigForTetrisGame2 = new GameConfig(GAME_2_SCORE_X_OFFSET,
+                GAME_2_SCORE_Y_OFFSET,
+                GAME_2_BOARD_X_OFFSET,
+                GAME_2_BOARD_Y_OFFSET);
 
         InputProvider provider = new InputProvider(container.getInput());
         provider.addListener(new InputProviderListener() {
             @Override
             public void controlPressed(Command command) {
                 TetrisCommand tetrisCommand = (TetrisCommand) command;
-                tetrisGame.movePiece(tetrisCommand.getDirection());
+                tetrisGame1.movePiece(tetrisCommand.getDirection());
+                tetrisGame2.movePiece(tetrisCommand.getDirection());
             }
 
             @Override
             public void controlReleased(Command command) {
             }
         });
+
+
         provider.bindCommand(new KeyControl(Input.KEY_LEFT), left);
         provider.bindCommand(new KeyControl(Input.KEY_RIGHT), right);
         provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
@@ -107,18 +131,13 @@ public class Game extends BasicGame {
         pieceTypeToImageMap.put(PieceType.T_PIECE, new Image("images/red.png"));
         pieceTypeToImageMap.put(PieceType.Z_PIECE, new Image("images/yellow.png"));
 
-        initLeapMotion();
-    }
-
-    private void initLeapMotion() {
-        leapController = new Controller();
-        leapListener = new LeapListener(tetrisGame);
-        leapController.addListener(leapListener);
     }
 
     @Override
     public void update(GameContainer container, int delta) throws SlickException {
-        tetrisGame.tick();
+        tetrisGame1.tick();
+
+        tetrisGame2.tick();
     }
 
     public static void main(String[] args) throws SlickException {
