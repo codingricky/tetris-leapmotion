@@ -3,7 +3,7 @@ package tetris.game;
 public class TetrisGameScreenPlacement {
 
     private static final int FIXED_X_OFFSET = 30;
-    public static final int FIXED_Y_OFFSET = 30;
+    public static final int FIXED_Y_OFFSET = 40;
     private final int scoreX;
     private final int scoreY;
 

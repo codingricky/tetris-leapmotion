@@ -24,7 +24,7 @@ import org.newdawn.slick.command.KeyControl;
 
 public class Game extends BasicGame {
 
-    private static final int NUMBER_OF_GAMES = 10;
+    private static final int NUMBER_OF_GAMES = 1;
 
     private static final int WIDTH = 500;
     private static final int HEIGHT = 1000;
@@ -43,6 +43,7 @@ public class Game extends BasicGame {
     private final Command rotate = new TetrisCommand(Direction.ROTATE);
     private final Command fall = new TetrisCommand(Direction.FALL);
     private final Command addGame = new BasicCommand("Add Game");
+    private final Command previousGame = new BasicCommand("Previous Game");
     private final Command nextGame = new BasicCommand("Next Game");
 
     private final AllGames games = new AllGames();
@@ -54,7 +55,12 @@ public class Game extends BasicGame {
 
     @Override
     public void render(GameContainer container, Graphics g) throws SlickException {
-        g.scale(0.6f, 0.6f);
+        int numberOfGames = games.numberOfGames();
+        float scale = (float) Math.log(numberOfGames);
+        scale = 1/scale;
+        scale = Math.min(scale, 1);
+        g.scale(scale, scale);
+
 
         int currentColumnInRow = 0;
         int currentRow = 0;
@@ -71,7 +77,10 @@ public class Game extends BasicGame {
 
     private void drawBoard(Graphics g, TetrisGame tetrisGame, TetrisGameScreenPlacement screenPlacement) {
         Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
-        g.setColor(Color.white);
+        boolean isGameCurrent = games.isGameCurrent(tetrisGame);
+        Color color = isGameCurrent ? Color.red : Color.white;
+        g.setColor(color);
+
         g.drawRect(screenPlacement.getBoardXOffset(),
                 screenPlacement.getBoardYOffset(),
                 tetrisGame.getX() * sampleImage.getWidth(),
@@ -106,9 +115,15 @@ public class Game extends BasicGame {
             public void controlPressed(Command command) {
                 if (command instanceof TetrisCommand) {
                     TetrisCommand tetrisCommand = (TetrisCommand) command;
-                    games.allMove(tetrisCommand.getDirection());
+                    games.moveCurrentGame(tetrisCommand.getDirection());
                 } else {
-                    
+                    if (command == nextGame) {
+                        games.moveToNextGame();
+                    } else if (command == previousGame) {
+                        games.moveToPreviousGame();
+                    } else if (command == addGame) {
+                        games.addGame();
+                    }
                 }
             }
 
@@ -123,6 +138,7 @@ public class Game extends BasicGame {
         provider.bindCommand(new KeyControl(Input.KEY_UP), rotate);
         provider.bindCommand(new KeyControl(Input.KEY_SPACE), fall);
         provider.bindCommand(new KeyControl(Input.KEY_2), nextGame);
+        provider.bindCommand(new KeyControl(Input.KEY_1), previousGame);
         provider.bindCommand(new KeyControl(Input.KEY_3), addGame);
     }
 
@@ -143,7 +159,7 @@ public class Game extends BasicGame {
 
     public static void main(String[] args) throws SlickException {
         AppGameContainer app = new AppGameContainer(new Game());
-        app.setDisplayMode(WIDTH * NUMBER_OF_GAMES, HEIGHT, false);
+        app.setDisplayMode(WIDTH * 5, HEIGHT, false);
         app.setForceExit(false);
         app.start();
     }
