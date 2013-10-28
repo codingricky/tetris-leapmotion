@@ -80,4 +80,10 @@ public class AllGames {
     public int numberOfGames() {
         return games.size();
     }
+
+    public void deleteGame() {
+        if (games.size() == 1) return;
+
+        games.remove(games.size() - 1);
+    }
 }

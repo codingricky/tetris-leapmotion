@@ -3,6 +3,7 @@ package tetris.game;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.leapmotion.leap.Controller;
 import core.tetris.Direction;
 import core.tetris.PieceType;
 import core.tetris.TetrisGame;
@@ -43,11 +44,15 @@ public class Game extends BasicGame {
     private final Command rotate = new TetrisCommand(Direction.ROTATE);
     private final Command fall = new TetrisCommand(Direction.FALL);
     private final Command addGame = new BasicCommand("Add Game");
+    private final Command deleteGame = new BasicCommand("Delete Game");
     private final Command previousGame = new BasicCommand("Previous Game");
     private final Command nextGame = new BasicCommand("Next Game");
 
     private final AllGames games = new AllGames();
     private final Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
+
+    private Controller leapController;
+    private LeapTetrisListener leapTetrisListener;
 
     public Game() {
         super("Tetris LeapMotion");
@@ -123,6 +128,8 @@ public class Game extends BasicGame {
                         games.moveToPreviousGame();
                     } else if (command == addGame) {
                         games.addGame();
+                    } else if (command == deleteGame) {
+                        games.deleteGame();
                     }
                 }
             }
@@ -140,6 +147,11 @@ public class Game extends BasicGame {
         provider.bindCommand(new KeyControl(Input.KEY_2), nextGame);
         provider.bindCommand(new KeyControl(Input.KEY_1), previousGame);
         provider.bindCommand(new KeyControl(Input.KEY_3), addGame);
+        provider.bindCommand(new KeyControl(Input.KEY_4), deleteGame);
+
+        leapController = new Controller();
+        leapTetrisListener = new LeapTetrisListener(games);
+        leapController.addListener(leapTetrisListener);
     }
 
     private void buildPieceTypeToImageMap() throws SlickException {
