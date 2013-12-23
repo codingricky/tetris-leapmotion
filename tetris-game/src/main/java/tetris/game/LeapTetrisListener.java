@@ -2,6 +2,7 @@ package tetris.game;
 
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Gesture;
+import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.Listener;
 import com.sun.istack.internal.logging.Logger;
 import core.tetris.Direction;
@@ -14,6 +15,7 @@ public class LeapTetrisListener extends Listener {
     private final TetrisGame tetrisGame;
     private float lastX;
     private float lastY;
+
     private long lastRotation;
 
     public LeapTetrisListener(TetrisGame tetrisGame) {
@@ -33,7 +35,7 @@ public class LeapTetrisListener extends Listener {
         for (Gesture gesture : controller.frame().gestures()) {
             final boolean isCircle = gesture.type() == Gesture.Type.TYPE_CIRCLE;
             final boolean isStopped = gesture.state() == Gesture.State.STATE_STOP;
-            final boolean isSufficientTimeBetweenRotations = (System.currentTimeMillis() - lastRotation) > 500;
+            final boolean isSufficientTimeBetweenRotations = (System.currentTimeMillis() - lastRotation) > 1000;
             if (gesture.isValid() && isCircle && isStopped && isSufficientTimeBetweenRotations) {
                 tetrisGame.movePiece(Direction.ROTATE);
                 lastRotation = System.currentTimeMillis();
@@ -41,25 +43,29 @@ public class LeapTetrisListener extends Listener {
             }
         }
 
-        float x = controller.frame().hands().get(0).palmPosition().get(0);
-        movePiece(x, 0);
+        final Hand hand = controller.frame().hands().get(0);
+        movePiece(hand.palmPosition().getX(), hand.palmPosition().getY());
     }
 
-    public void movePiece(float x, float y) {
-        final int horizontalMovement = (int) ((x - lastX)/5);
-        final int verticalMovement = (int) ((y - lastY)/5);
+    private void movePiece(float x, float y) {
+        final int horizontalMovement = (int) ((x - lastX) / 5);
+        final int verticalMovement = (int) ((y - lastY) / 5);
 
-        System.out.println("h=" + horizontalMovement + ",v=" + verticalMovement);
         if (horizontalMovement != 0) {
             Direction direction = x > lastX ? Direction.RIGHT : Direction.LEFT;
-            tetrisGame.movePieceNTimes(direction, horizontalMovement);
+            LOGGER.info("Moving piece " + direction + " " + horizontalMovement + " times.");
+            tetrisGame.movePieceNTimes(direction, Math.abs(horizontalMovement));
             lastX = x;
+        }
 
-        } else {
-//            if (verticalMovement > 0) {
-//                tetrisGame.movePieceNTimes(Direction.DOWN, verticalMovement);
-//            }
+        if (verticalMovement != 0) {
+            LOGGER.info("Moving piece " + Direction.DOWN + " " + verticalMovement + " times.");
+            final boolean isDirectionDown = y < lastY;
+            if (isDirectionDown) {
+                tetrisGame.movePieceNTimes(Direction.DOWN, Math.abs(verticalMovement));
+            }
             lastY = y;
         }
     }
+
 }

@@ -7,14 +7,15 @@ public class TetrisGame {
 
     private final GameState gameState;
     private final TetrisBoard board;
-    private final TetrisPieceFactory factory;
+    
+    private TetrisPieceFactory tetrisPieceFactory;
     private TetrisPiece currentPiece;
     private long lastUpdate = 0;
 
     public TetrisGame() {
         board = new TetrisBoard(NUMBER_OF_COLS, NUMBER_OF_ROWS);
         gameState = new GameState();
-        factory = new TetrisPieceFactory(board);
+        tetrisPieceFactory = new TetrisPieceFactory(board);
     }
 
     public void startGame() {
@@ -88,7 +89,7 @@ public class TetrisGame {
                     gameState.updateScore(completedLines);
                 }
 
-                currentPiece = factory.getPiece(board);
+                currentPiece = tetrisPieceFactory.getPiece(board);
 
                 if (board.willFit(currentPiece)) {
                     board.addPiece(currentPiece);
@@ -102,8 +103,11 @@ public class TetrisGame {
         }
     }
 
-
     public int getScore() {
         return gameState.getScore();
+    }
+
+    public void setTetrisPieceFactory(TetrisPieceFactory tetrisPieceFactory) {
+        this.tetrisPieceFactory = tetrisPieceFactory;
     }
 }

@@ -2,7 +2,7 @@ package core.tetris;
 
 public class GameState {
 
-    private static final int DEFAULT_DELAY = 750;
+    private static final int DEFAULT_DELAY = 1 * 1000;
 
     private int totalLines;
 	private int delay;

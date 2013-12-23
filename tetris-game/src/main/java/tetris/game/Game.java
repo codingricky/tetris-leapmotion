@@ -35,14 +35,16 @@ public class Game extends BasicGame {
 
     private final TetrisGame tetrisGame;
     private final Map<PieceType, Image> pieceTypeToImageMap;
+    private final Controller leapController;
+    private final LeapTetrisListener leapTetrisListener;
 
     public Game() {
         super("Tetris LeapMotion");
         tetrisGame = new TetrisGame();
         pieceTypeToImageMap = new HashMap<>();
 
-        Controller leapController = new Controller();
-        LeapTetrisListener leapTetrisListener = new LeapTetrisListener(tetrisGame);
+        leapController = new Controller();
+        leapTetrisListener = new LeapTetrisListener(tetrisGame);
         leapController.addListener(leapTetrisListener);
     }
 

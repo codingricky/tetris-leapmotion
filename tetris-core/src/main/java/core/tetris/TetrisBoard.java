@@ -5,7 +5,7 @@ import java.util.List;
 
 public class TetrisBoard {
 
-	public static final PieceType EMPTY_BLOCK = null;
+	private static final PieceType EMPTY_BLOCK = null;
 
 	private Board board;
 
