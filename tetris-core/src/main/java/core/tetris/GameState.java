@@ -34,7 +34,7 @@ public class GameState {
 	}
 
 	public int getScore() {
-		return score;
+        return score;
 	}
 
 	public void updateScore(int completeLines) {

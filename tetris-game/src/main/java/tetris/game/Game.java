@@ -81,7 +81,7 @@ public class Game extends BasicGame {
     private void drawBoard(Graphics graphics, TetrisGame tetrisGame) {
         Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
         graphics.drawRect(FIXED_X_OFFSET,
-                FIXED_X_OFFSET,
+                FIXED_Y_OFFSET,
                 tetrisGame.getX() * sampleImage.getWidth(),
                 tetrisGame.getY() * sampleImage.getHeight());
 

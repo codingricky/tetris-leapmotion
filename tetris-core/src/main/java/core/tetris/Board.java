@@ -32,18 +32,4 @@ public class Board {
         matrix[x][y] = value;
         return this;
     }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        for (int y = getY() - 1; y >= 0; y--) {
-            for (int x = 0; x < getX(); x++) {
-                sb.append(getPieceAt(x, y) == null ? " " : "X");
-            }
-            sb.append("\n");
-        }
-
-        return sb.toString();
-    }
 }

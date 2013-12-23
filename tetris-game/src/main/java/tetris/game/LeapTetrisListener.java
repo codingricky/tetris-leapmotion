@@ -3,10 +3,13 @@ package tetris.game;
 import com.leapmotion.leap.Controller;
 import com.leapmotion.leap.Gesture;
 import com.leapmotion.leap.Listener;
+import com.sun.istack.internal.logging.Logger;
 import core.tetris.Direction;
 import core.tetris.TetrisGame;
 
 public class LeapTetrisListener extends Listener {
+
+    private static final Logger LOGGER = Logger.getLogger(LeapTetrisListener.class);
 
     private final TetrisGame tetrisGame;
     private float lastX;
@@ -18,16 +21,15 @@ public class LeapTetrisListener extends Listener {
     }
 
     public void onInit(Controller controller) {
-        System.out.println("Initialized");
+        LOGGER.info("onInit");
     }
 
     public void onConnect(Controller controller) {
-        System.out.println("Connected");
+        LOGGER.info("onConnect");
         controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
     }
 
     public void onFrame(Controller controller) {
-
         for (Gesture gesture : controller.frame().gestures()) {
             final boolean isCircle = gesture.type() == Gesture.Type.TYPE_CIRCLE;
             final boolean isStopped = gesture.state() == Gesture.State.STATE_STOP;

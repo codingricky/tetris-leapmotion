@@ -3,7 +3,7 @@ package core.tetris;
 public class Point {
 
     private final int x;
-    private int y;
+    private final int y;
 
     public Point() {
         this(0, 0);
