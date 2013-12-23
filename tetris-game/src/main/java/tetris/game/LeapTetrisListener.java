@@ -1,19 +1,20 @@
 package tetris.game;
 
 import com.leapmotion.leap.Controller;
-import com.leapmotion.leap.Frame;
 import com.leapmotion.leap.Gesture;
-import com.leapmotion.leap.Hand;
 import com.leapmotion.leap.Listener;
-import com.leapmotion.leap.SwipeGesture;
 import core.tetris.Direction;
+import core.tetris.TetrisGame;
 
 public class LeapTetrisListener extends Listener {
 
-    private final AllGames allGames;
+    private final TetrisGame tetrisGame;
+    private float lastX;
+    private float lastY;
+    private long lastRotation;
 
-    public LeapTetrisListener(AllGames allGames) {
-        this.allGames = allGames;
+    public LeapTetrisListener(TetrisGame tetrisGame) {
+        this.tetrisGame = tetrisGame;
     }
 
     public void onInit(Controller controller) {
@@ -22,47 +23,41 @@ public class LeapTetrisListener extends Listener {
 
     public void onConnect(Controller controller) {
         System.out.println("Connected");
-        controller.enableGesture(Gesture.Type.TYPE_SWIPE);
         controller.enableGesture(Gesture.Type.TYPE_CIRCLE);
-        controller.enableGesture(Gesture.Type.TYPE_SCREEN_TAP);
-        controller.enableGesture(Gesture.Type.TYPE_KEY_TAP);
     }
 
     public void onFrame(Controller controller) {
-        Frame frame = controller.frame();
 
-        Hand leftHand = frame.hands().leftmost();
-        Hand rightHand = frame.hands().rightmost();
-
-        controller.frame().gestures().forEach(gesture -> {
-            if (gesture.isValid() && gesture.state() == Gesture.State.STATE_STOP) {
-                Hand hand = gesture.hands().get(0);
-                if (hand.id() == leftHand.id()) {
-                    if (gesture.type() == Gesture.Type.TYPE_SWIPE) {
-                        SwipeGesture swipeGesture = new SwipeGesture(gesture);
-                        if (swipeGesture.direction().getX() < 0) {
-                            allGames.moveToPreviousGame();
-                        } else if (swipeGesture.direction().getX() > 0) {
-                            allGames.moveToNextGame();
-                        }
-                    } else if (gesture.type() == Gesture.Type.TYPE_SCREEN_TAP) {
-                        allGames.addGame();
-                    } else if (gesture.type() == Gesture.Type.TYPE_CIRCLE) {
-                        allGames.deleteGame();
-                    }
-                } else if (hand.id() == rightHand.id()) {
-                    if (gesture.type() == Gesture.Type.TYPE_SWIPE) {
-                        SwipeGesture swipeGesture = new SwipeGesture(gesture);
-                        if (swipeGesture.direction().getX() < 0) {
-                            allGames.moveCurrentGame(Direction.LEFT);
-                        } else if (swipeGesture.direction().getX() > 0) {
-                            allGames.moveCurrentGame(Direction.RIGHT);
-                        }
-                    } else if (gesture.type() == Gesture.Type.TYPE_CIRCLE) {
-                        allGames.moveCurrentGame(Direction.ROTATE);
-                    }
-                }
+        for (Gesture gesture : controller.frame().gestures()) {
+            final boolean isCircle = gesture.type() == Gesture.Type.TYPE_CIRCLE;
+            final boolean isStopped = gesture.state() == Gesture.State.STATE_STOP;
+            final boolean isSufficientTimeBetweenRotations = (System.currentTimeMillis() - lastRotation) > 500;
+            if (gesture.isValid() && isCircle && isStopped && isSufficientTimeBetweenRotations) {
+                tetrisGame.movePiece(Direction.ROTATE);
+                lastRotation = System.currentTimeMillis();
+                return;
             }
-        });
+        }
+
+        float x = controller.frame().hands().get(0).palmPosition().get(0);
+        movePiece(x, 0);
+    }
+
+    public void movePiece(float x, float y) {
+        final int horizontalMovement = (int) ((x - lastX)/5);
+        final int verticalMovement = (int) ((y - lastY)/5);
+
+        System.out.println("h=" + horizontalMovement + ",v=" + verticalMovement);
+        if (horizontalMovement != 0) {
+            Direction direction = x > lastX ? Direction.RIGHT : Direction.LEFT;
+            tetrisGame.movePieceNTimes(direction, horizontalMovement);
+            lastX = x;
+
+        } else {
+//            if (verticalMovement > 0) {
+//                tetrisGame.movePieceNTimes(Direction.DOWN, verticalMovement);
+//            }
+            lastY = y;
+        }
     }
 }

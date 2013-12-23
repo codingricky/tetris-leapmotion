@@ -1,118 +1,55 @@
 package tetris.game;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.leapmotion.leap.Controller;
 import core.tetris.Direction;
 import core.tetris.PieceType;
 import core.tetris.TetrisGame;
-import org.newdawn.slick.Animation;
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.BasicGame;
-import org.newdawn.slick.Color;
-import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.command.BasicCommand;
 import org.newdawn.slick.command.Command;
 import org.newdawn.slick.command.InputProvider;
 import org.newdawn.slick.command.InputProviderListener;
 import org.newdawn.slick.command.KeyControl;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class Game extends BasicGame {
 
-    private static final int NUMBER_OF_GAMES = 1;
+    private static final int WIDTH = 380;
+    private static final int HEIGHT = 700;
 
-    private static final int WIDTH = 500;
-    private static final int HEIGHT = 1000;
+    private static final int FIXED_X_OFFSET = 30;
+    private static final int FIXED_Y_OFFSET = 40;
 
-    private static final int NUMBER_OF_GAMES_PER_ROW = 5;
+    private static final Command left = new TetrisCommand(Direction.LEFT);
+    private static final Command right = new TetrisCommand(Direction.RIGHT);
+    private static final Command down = new TetrisCommand(Direction.DOWN);
+    private static final Command rotate = new TetrisCommand(Direction.ROTATE);
+    private static final Command fall = new TetrisCommand(Direction.FALL);
 
-    static {
-        assert(NUMBER_OF_GAMES_PER_ROW >= 1);
-        assert(NUMBER_OF_GAMES >= 1);
-    }
-
-    // commands
-    private final Command left = new TetrisCommand(Direction.LEFT);
-    private final Command right = new TetrisCommand(Direction.RIGHT);
-    private final Command down = new TetrisCommand(Direction.DOWN);
-    private final Command rotate = new TetrisCommand(Direction.ROTATE);
-    private final Command fall = new TetrisCommand(Direction.FALL);
-    private final Command addGame = new BasicCommand("Add Game");
-    private final Command deleteGame = new BasicCommand("Delete Game");
-    private final Command previousGame = new BasicCommand("Previous Game");
-    private final Command nextGame = new BasicCommand("Next Game");
-
-    private final AllGames games = new AllGames();
-    private final Map<PieceType, Image> pieceTypeToImageMap = new HashMap<>();
-
-    private Controller leapController;
-    private LeapTetrisListener leapTetrisListener;
+    private final TetrisGame tetrisGame;
+    private final Map<PieceType, Image> pieceTypeToImageMap;
 
     public Game() {
         super("Tetris LeapMotion");
-    }
+        tetrisGame = new TetrisGame();
+        pieceTypeToImageMap = new HashMap<>();
 
-    @Override
-    public void render(GameContainer container, Graphics g) throws SlickException {
-        int numberOfGames = games.numberOfGames();
-        float scale = (float) Math.log(numberOfGames);
-        scale = 1/scale;
-        scale = Math.min(scale, 1);
-        g.scale(scale, scale);
-
-
-        int currentColumnInRow = 0;
-        int currentRow = 0;
-        for (int i = 0; i < games.getGames().size(); i++) {
-            TetrisGame currentGame = games.getGames().get(i);
-            drawBoard(g, currentGame, new TetrisGameScreenPlacement(currentColumnInRow, currentRow));
-            currentColumnInRow++;
-            if (currentColumnInRow == NUMBER_OF_GAMES_PER_ROW) {
-                currentColumnInRow = 0;
-                currentRow++;
-            }
-        }
-    }
-
-    private void drawBoard(Graphics g, TetrisGame tetrisGame, TetrisGameScreenPlacement screenPlacement) {
-        Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
-        boolean isGameCurrent = games.isGameCurrent(tetrisGame);
-        Color color = isGameCurrent ? Color.red : Color.white;
-        g.setColor(color);
-
-        g.drawRect(screenPlacement.getBoardXOffset(),
-                screenPlacement.getBoardYOffset(),
-                tetrisGame.getX() * sampleImage.getWidth(),
-                tetrisGame.getY() * sampleImage.getHeight());
-
-        for (int x = 0; x < tetrisGame.getX(); x++) {
-            for (int y = 0; y < tetrisGame.getY(); y++) {
-                PieceType pieceAt = tetrisGame.getPieceAt(x, y);
-                if (pieceAt != null) {
-                    Image image = pieceTypeToImageMap.get(pieceAt);
-                    int xPosition = x * image.getWidth();
-                    int yPosition = y * image.getHeight();
-                    g.drawImage(image, xPosition + screenPlacement.getBoardXOffset(), yPosition + screenPlacement.getBoardYOffset());
-                }
-            }
-        }
-
-        String score = String.format("Score:%d", tetrisGame.getScore());
-        g.drawString(score, screenPlacement.getScoreXOffset(), screenPlacement.getScoreYOffset());
+        Controller leapController = new Controller();
+        LeapTetrisListener leapTetrisListener = new LeapTetrisListener(tetrisGame);
+        leapController.addListener(leapTetrisListener);
     }
 
     @Override
     public void init(GameContainer container) throws SlickException {
         buildPieceTypeToImageMap();
-
-        games.createGames(NUMBER_OF_GAMES);
-        games.allStart();
+        tetrisGame.startGame();
 
         InputProvider provider = new InputProvider(container.getInput());
         provider.addListener(new InputProviderListener() {
@@ -120,17 +57,7 @@ public class Game extends BasicGame {
             public void controlPressed(Command command) {
                 if (command instanceof TetrisCommand) {
                     TetrisCommand tetrisCommand = (TetrisCommand) command;
-                    games.moveCurrentGame(tetrisCommand.getDirection());
-                } else {
-                    if (command == nextGame) {
-                        games.moveToNextGame();
-                    } else if (command == previousGame) {
-                        games.moveToPreviousGame();
-                    } else if (command == addGame) {
-                        games.addGame();
-                    } else if (command == deleteGame) {
-                        games.deleteGame();
-                    }
+                    tetrisGame.movePiece(tetrisCommand.getDirection());
                 }
             }
 
@@ -144,14 +71,41 @@ public class Game extends BasicGame {
         provider.bindCommand(new KeyControl(Input.KEY_DOWN), down);
         provider.bindCommand(new KeyControl(Input.KEY_UP), rotate);
         provider.bindCommand(new KeyControl(Input.KEY_SPACE), fall);
-        provider.bindCommand(new KeyControl(Input.KEY_2), nextGame);
-        provider.bindCommand(new KeyControl(Input.KEY_1), previousGame);
-        provider.bindCommand(new KeyControl(Input.KEY_3), addGame);
-        provider.bindCommand(new KeyControl(Input.KEY_4), deleteGame);
+    }
 
-        leapController = new Controller();
-        leapTetrisListener = new LeapTetrisListener(games);
-        leapController.addListener(leapTetrisListener);
+    @Override
+    public void render(GameContainer container, Graphics g) throws SlickException {
+        drawBoard(g, tetrisGame);
+    }
+
+    private void drawBoard(Graphics graphics, TetrisGame tetrisGame) {
+        Image sampleImage = pieceTypeToImageMap.get(PieceType.I_PIECE);
+        graphics.drawRect(FIXED_X_OFFSET,
+                FIXED_X_OFFSET,
+                tetrisGame.getX() * sampleImage.getWidth(),
+                tetrisGame.getY() * sampleImage.getHeight());
+
+        for (int x = 0; x < tetrisGame.getX(); x++) {
+            for (int y = 0; y < tetrisGame.getY(); y++) {
+                PieceType pieceAt = tetrisGame.getPieceAt(x, y);
+                if (pieceAt != null) {
+                    Image image = pieceTypeToImageMap.get(pieceAt);
+                    int xPosition = x * image.getWidth();
+                    int yPosition = y * image.getHeight();
+                    graphics.drawImage(image,
+                            xPosition + FIXED_X_OFFSET,
+                            yPosition + FIXED_Y_OFFSET);
+                }
+            }
+        }
+
+        String score = String.format("Score:%d", tetrisGame.getScore());
+        graphics.drawString(score, FIXED_X_OFFSET, FIXED_Y_OFFSET);
+    }
+
+    @Override
+    public void update(GameContainer container, int delta) throws SlickException {
+        tetrisGame.tick();
     }
 
     private void buildPieceTypeToImageMap() throws SlickException {
@@ -164,16 +118,10 @@ public class Game extends BasicGame {
         pieceTypeToImageMap.put(PieceType.Z_PIECE, new Image("images/yellow.png"));
     }
 
-    @Override
-    public void update(GameContainer container, int delta) throws SlickException {
-        games.allTick();
-    }
-
     public static void main(String[] args) throws SlickException {
         AppGameContainer app = new AppGameContainer(new Game());
-        app.setDisplayMode(WIDTH * 5, HEIGHT, false);
+        app.setDisplayMode(WIDTH, HEIGHT, false);
         app.setForceExit(false);
         app.start();
     }
-
 }

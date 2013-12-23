@@ -52,6 +52,12 @@ public class TetrisGame {
         gameState.stopPlaying();
     }
 
+    public void movePieceNTimes(Direction direction, int times) {
+        for (int i = 0; i < times; i++) {
+            movePiece(direction);
+        }
+    }
+
     public void movePiece(Direction direction) {
         if (direction == null) {
             return;
